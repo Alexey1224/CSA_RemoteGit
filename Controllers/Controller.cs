@@ -14,8 +14,13 @@ namespace CSA
     {
 
 
-        private static IStorage<Laptop> _LaptopList = new LaptopList();
+        //private static IStorage<Laptop> _LaptopList = new LaptopList();
+        private IStorage<Laptop> _LaptopList;
 
+        public Lab1Controller(IStorage<Laptop> LaptopList)
+        {
+            _LaptopList = LaptopList;
+        }
         [HttpGet]
         public ActionResult<IEnumerable<Laptop>> Get()
         {
