@@ -1,12 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Reflection;
+using Microsoft.AspNetCore.Mvc;
+using CSA.Model;
+using CSA.Model;
 
 namespace CSA.Controllers
 {
-    public class VersionController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class VersionController : ControllerBase
     {
-        public IActionResult Index()
+        // GET api/values
+        [HttpGet]
+        public ActionResult<string> Get()
         {
-            return View();
+            var versionInfo = new Versions
+            {
+                Company = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyCompanyAttribute>().Company,
+                Product = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyProductAttribute>().Product,
+                ProductVersion = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion
+            };
+
+            return Ok(versionInfo);
         }
     }
 }
