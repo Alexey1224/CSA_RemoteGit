@@ -13,45 +13,65 @@ namespace CSA
     public class Lab1Controller : ControllerBase
     {
 
-        //private static List<Laptop> _memCache = new List<Laptop>();
+
         private static IStorage<Laptop> _LaptopList = new LaptopList();
 
         [HttpGet]
         public ActionResult<IEnumerable<Laptop>> Get()
         {
-            //return _LaptopList;
+
             return Ok(_LaptopList.All);
         }
 
         [HttpGet("{id}")]
-        //public ActionResult<Laptop> Get(int id)
+
         public ActionResult<Laptop> Get(Guid id)
         {
-            //if (_LaptopList.Count <= id) throw new IndexOutOfRangeException("Нет такого у нас");
 
-            return _LaptopList[id];
+            if (_LaptopList.Has(id)) return NotFound("No such");
+
+            return Ok(_LaptopList[id]);
         }
 
         [HttpPost]
-        public void Post([FromBody] Laptop value)
+
+        public IActionResult Post([FromBody] Laptop value)
         {
+            var validationResult = value.Validate();
+
+            if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
+
             _LaptopList.Add(value);
+
+            return Ok($"{value.ToString()} has been added");
         }
 
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] Laptop value)
-        {
-            if (_LaptopList.Count <= id) throw new IndexOutOfRangeException("Нет такого у нас");
 
+        public IActionResult Put(Guid id, [FromBody] Laptop value)
+        {
+
+            if (_LaptopList.Has(id)) return NotFound("No such");
+
+            var validationResult = value.Validate();
+
+            if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
+
+            var previousValue = _LaptopList[id];
             _LaptopList[id] = value;
+            return Ok($"{previousValue.ToString()} has been updated to {value.ToString()}");
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-            if (_LaptopList.Count <= id) throw new IndexOutOfRangeException("Нет такого у нас");
 
+        public IActionResult Delete(Guid id)
+        {
+
+            if (_LaptopList.Has(id)) return NotFound("No such");
+
+            var valueToRemove = _LaptopList[id];
             _LaptopList.RemoveAt(id);
+            return Ok($"{valueToRemove.ToString()} has been removed");
         }
     }
 }

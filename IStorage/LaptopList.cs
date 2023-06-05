@@ -5,7 +5,7 @@ using System.Linq;
 using CSA.IStorage;
 namespace CSA.IStorage
 {
-    public class LaptopList
+    public class LaptopList :IStorage<Laptop>
     {
         private object _sync = new object();
         private List<Laptop> _LaptopList = new List<Laptop>();
@@ -41,7 +41,7 @@ namespace CSA.IStorage
 
         public void Add(Laptop value)
         {
-            if (value.Id != Guid.Empty) throw new IncorrectVideoCardException($"Cannot add value with predefined id {value.Id}");
+            if (value.Id == Guid.Empty) throw new IncorrectVideoCardException($"Cannot add value with predefined id {value.Id}");
 
             value.Id = Guid.NewGuid();
             this[value.Id] = value;
